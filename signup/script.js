@@ -60,7 +60,7 @@ form.addEventListener("submit", async (e) => {
             email: email,
             username: username,
             publicusername: publicusername,
-            photoURL: "/images/default-avatar.png",
+            photoURL: "/snaply/images/default-avatar.png",
             createdAt: serverTimestamp()
         });
 
