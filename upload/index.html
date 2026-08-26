@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Video Yükle - Snaply</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Wanted Sans", sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        @font-face {
+            font-family: 'Wanted Sans';
+            src: url('/fonts/WantedSans.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        header > img {
+            width: 99px;
+            margin: 0;
+        }
+
+        header nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        #profilePhoto {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #eee;
+            transition: 0.2s;
+        }
+
+        #profilePhoto:hover {
+            transform: scale(1.05);
+            border-color: #ccc;
+        }
+
+        aside {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 200px;
+            height: calc(100% - 60px);
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding-top: 20px;
+        }
+
+        aside a {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        aside a:hover {
+            background-color: #f0f0f0;
+        }
+
+        main {
+            margin-left: 200px;
+            padding-top: 80px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .upload-container {
+            max-width: 700px;
+            margin: 30px auto;
+        }
+
+        .upload-container h1 {
+            margin-bottom: 8px;
+        }
+
+        .upload-container p {
+            color: #777;
+            margin-top: 0;
+        }
+
+        .video-selector {
+            margin-top: 30px;
+            width: 100%;
+            min-height: 300px;
+            background-color: #fff;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-sizing: border-box;
+            transition: 0.2s;
+        }
+
+        .video-selector:hover {
+            background-color: #fafafa;
+            border-color: #aaa;
+        }
+
+        .video-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .select-title {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .select-description {
+            margin-top: 8px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .video-info {
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .video-preview {
+            width: 100%;
+            background-color: #000;
+        }
+
+        .video-preview video {
+            width: 100%;
+            max-height: 400px;
+            display: block;
+        }
+
+        .file-info {
+            padding: 15px;
+        }
+
+        .file-name {
+            font-weight: bold;
+            word-break: break-all;
+        }
+
+        .file-size {
+            color: #777;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .continue-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background-color: #111;
+            color: #fff;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .continue-button:hover:not(:disabled) {
+            opacity: 0.85;
+        }
+
+        .continue-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <img src="../images/SnaplyText.png" alt="Snaply">
+
+        <nav>
+            <a href="../">Ana Sayfa</a>
+            <a href="#">Popüler</a>
+            <a href="#">Abonelikler</a>
+        </nav>
+
+        <div class="header-right">
+            <img
+                id="profilePhoto"
+                src="../images/default-avatar.png"
+                alt="Profil"
+            >
+        </div>
+
+    </header>
+
+
+    <aside>
+
+        <a href="../">Ana Sayfa</a>
+        <a href="#">Trendler</a>
+        <a href="#">Abonelikler</a>
+        <a href="#">Kitaplık</a>
+        <a href="#">Geçmiş</a>
+
+    </aside>
+
+
+    <main>
+
+        <div class="upload-container">
+
+            <h1>Video Yükle</h1>
+
+            <p>
+                Snaply'de paylaşmak istediğin videoyu seç.
+            </p>
+
+
+            <label
+                class="video-selector"
+                for="videoInput"
+            >
+
+                <div class="video-icon">
+                    🎥
+                </div>
+
+                <div
+                    class="select-title"
+                    id="selectTitle"
+                >
+                    Video seçmek için tıklayın
+                </div>
+
+                <div class="select-description">
+                    MP4, WebM veya MOV
+                </div>
+
+            </label>
+
+
+            <input
+                type="file"
+                id="videoInput"
+                accept="video/mp4,video/webm,video/quicktime"
+                hidden
+            >
+
+
+            <div
+                id="videoInfo"
+                class="video-info hidden"
+            >
+
+                <div class="video-preview">
+
+                    <video
+                        id="videoPreview"
+                        controls
+                    ></video>
+
+                </div>
+
+
+                <div class="file-info">
+
+                    <div
+                        id="fileName"
+                        class="file-name"
+                    ></div>
+
+                    <div
+                        id="fileSize"
+                        class="file-size"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="continueButton"
+                class="continue-button"
+                disabled
+            >
+                Devam Et
+            </button>
+
+        </div>
+
+    </main>
+
+
+<script type="module">
+
+    import { auth, db } from "../firebase.js";
+
+    import {
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+    import {
+        doc,
+        getDoc
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+    const videoInput = document.getElementById("videoInput");
+    const videoPreview = document.getElementById("videoPreview");
+    const videoInfo = document.getElementById("videoInfo");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const selectTitle = document.getElementById("selectTitle");
+    const continueButton = document.getElementById("continueButton");
+    const profilePhoto = document.getElementById("profilePhoto");
+
+
+    let selectedVideo = null;
+
+
+    /*
+     * Firebase profil fotoğrafı
+     */
+
+    onAuthStateChanged(auth, async (user) => {
+
+        if (!user) return;
+
+        try {
+
+            const snap = await getDoc(
+                doc(db, "users", user.uid)
+            );
+
+            if (!snap.exists()) return;
+
+            const data = snap.data();
+
+            if (data.photoURL) {
+                profilePhoto.src = new URL(
+                    data.photoURL,
+                    window.location.origin
+                ).href;
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Profil fotoğrafı alınamadı:",
+                error
+            );
+
+        }
+
+    });
+
+
+    /*
+     * IndexedDB
+     */
+
+    function openUploadDB() {
+
+        return new Promise((resolve, reject) => {
+
+            const request =
+                indexedDB.open("SnaplyUploadDB", 1);
+
+
+            request.onupgradeneeded = (event) => {
+
+                const database =
+                    event.target.result;
+
+
+                if (
+                    !database.objectStoreNames.contains(
+                        "upload"
+                    )
+                ) {
+
+                    database.createObjectStore(
+                        "upload"
+                    );
+
+                }
+
+            };
+
+
+            request.onsuccess = () => {
+
+                resolve(request.result);
+
+            };
+
+
+            request.onerror = () => {
+
+                reject(request.error);
+
+            };
+
+        });
+
+    }
+
+
+    /*
+     * Videoyu kaydet
+     */
+
+    async function saveVideo(file) {
+
+        const database =
+            await openUploadDB();
+
+
+        return new Promise((resolve, reject) => {
+
+            const transaction =
+                database.transaction(
+                    "upload",
+                    "readwrite"
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    "upload"
+                );
+
+
+            const data = {
+
+                blob: file,
+
+                name: file.name,
+
+                type: file.type,
+
+                size: file.size
+
+            };
+
+
+            store.put(
+                data,
+                "video"
+            );
+
+
+            transaction.oncomplete = () => {
+
+                database.close();
+
+                resolve();
+
+            };
+
+
+            transaction.onerror = () => {
+
+                database.close();
+
+                reject(
+                    transaction.error
+                );
+
+            };
+
+        });
+
+    }
+
+
+    /*
+     * Video seçildi
+     */
+
+    videoInput.addEventListener(
+        "change",
+        async () => {
+
+            const file =
+                videoInput.files[0];
+
+
+            if (!file) return;
+
+
+            if (!file.type.startsWith("video/")) {
+
+                alert(
+                    "Lütfen bir video dosyası seç."
+                );
+
+                videoInput.value = "";
+
+                return;
+
+            }
+
+
+            selectedVideo = file;
+
+
+            /*
+             * Anlık önizleme
+             */
+
+            const url =
+                URL.createObjectURL(file);
+
+
+            videoPreview.src = url;
+
+            videoPreview.load();
+
+
+            fileName.textContent =
+                file.name;
+
+
+            fileSize.textContent =
+                formatFileSize(file.size);
+
+
+            selectTitle.textContent =
+                "Video seçildi";
+
+
+            videoInfo.classList.remove(
+                "hidden"
+            );
+
+
+            continueButton.disabled =
+                true;
+
+
+            /*
+             * Details sayfası için kaydet
+             */
+
+            try {
+
+                await saveVideo(file);
+
+
+                continueButton.disabled =
+                    false;
+
+
+                console.log(
+                    "Video başarıyla kaydedildi:",
+                    file.name
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Video kaydedilemedi:",
+                    error
+                );
+
+
+                alert(
+                    "Video hazırlanamadı."
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+     * Details'e geç
+     */
+
+    continueButton.addEventListener(
+        "click",
+        () => {
+
+            if (!selectedVideo) return;
+
+            window.location.href =
+                "details/";
+
+        }
+    );
+
+
+    function formatFileSize(bytes) {
+
+        if (bytes < 1024) {
+
+            return bytes + " B";
+
+        }
+
+
+        if (bytes < 1024 * 1024) {
+
+            return (
+                bytes / 1024
+            ).toFixed(1) + " KB";
+
+        }
+
+
+        if (bytes < 1024 * 1024 * 1024) {
+
+            return (
+                bytes /
+                (1024 * 1024)
+            ).toFixed(1) + " MB";
+
+        }
+
+
+        return (
+            bytes /
+            (1024 * 1024 * 1024)
+        ).toFixed(1) + " GB";
+
+    }
+
+</script>
+
+</body>
+</html>

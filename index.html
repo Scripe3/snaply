@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snaply</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Wanted Sans", sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        @font-face {
+            font-family: "Wanted Sans";
+            src: url("/fonts/WantedSans.woff") format("woff");
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        header > img {
+            width: 99px;
+            margin: 0;
+        }
+
+        header nav {
+            display: flex;
+            align-items: center;
+        }
+
+        header nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        #profilePhoto {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #eee;
+            transition: 0.2s;
+        }
+
+        #profilePhoto:hover {
+            transform: scale(1.05);
+            border-color: #ccc;
+        }
+
+        aside {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 200px;
+            height: calc(100% - 60px);
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding-top: 20px;
+            box-sizing: border-box;
+        }
+
+        aside a {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        aside a:hover {
+            background-color: #f0f0f0;
+        }
+
+        main {
+            margin-left: 200px;
+            padding-top: 80px;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .video-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .video-card-real {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .video-card-real:hover {
+            transform: scale(1.03);
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            background-color: #eee;
+        }
+
+        .video-info {
+            padding: 12px;
+        }
+
+        .video-title {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .video-author {
+            margin: 0;
+            font-size: 14px;
+            color: #777;
+        }
+
+        .video-description {
+            margin: 6px 0 0 0;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .no-videos {
+            grid-column: 1 / -1;
+            padding: 40px;
+            text-align: center;
+            color: #888;
+        }
+
+        .error-message {
+            grid-column: 1 / -1;
+            padding: 40px;
+            text-align: center;
+            color: #d33;
+        }
+
+        .loading {
+            position: fixed;
+
+            top: 60px;
+            left: 200px;
+            right: 0;
+            bottom: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background-color: transparent;
+
+            z-index: 900;
+        }
+
+        .loader {
+            border: 4px solid rgba(0, 0, 0, .1);
+            border-left-color: transparent;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            animation: spin89345 1s linear infinite;
+        }
+
+        @keyframes spin89345 {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .loading {
+                top: 60px;
+                left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <img
+            src="images/SnaplyText.png"
+            alt="Snaply"
+        >
+
+        <nav>
+            <a href="#">Ana Sayfa</a>
+            <a href="#">Popüler</a>
+            <a href="#">Abonelikler</a>
+        </nav>
+
+        <div class="header-right">
+
+            <img
+                id="profilePhoto"
+                src="images/default-avatar.png"
+                alt="Profil"
+            >
+
+        </div>
+
+    </header>
+
+
+    <aside>
+
+        <a href="#">Ana Sayfa</a>
+        <a href="#">Trendler</a>
+        <a href="#">Abonelikler</a>
+        <a href="#">Kitaplık</a>
+        <a href="#">Geçmiş</a>
+
+    </aside>
+
+
+    <main>
+
+        <div
+            class="video-grid"
+            id="videoGrid"
+        >
+
+            <div id="loading" class="loading">
+                <div class="loader"></div>
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <script type="module">
+
+        import { auth, db } from "./firebase.js";
+
+        import {
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+        import {
+            doc,
+            getDoc,
+            collection,
+            getDocs,
+            query,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+        const videoGrid =
+            document.getElementById("videoGrid");
+
+        const profilePhoto =
+            document.getElementById("profilePhoto");
+
+
+        /*
+         * PROFİL FOTOĞRAFI
+         */
+
+        onAuthStateChanged(
+            auth,
+            async (user) => {
+
+                if (!user) {
+
+                    profilePhoto.src =
+                        "images/default-avatar.png";
+
+                    return;
+
+                }
+
+                try {
+
+                    const userSnapshot =
+                        await getDoc(
+                            doc(
+                                db,
+                                "users",
+                                user.uid
+                            )
+                        );
+
+                    if (!userSnapshot.exists()) {
+                        return;
+                    }
+
+                    const userData =
+                        userSnapshot.data();
+
+                    if (userData.photoURL) {
+
+                        profilePhoto.src =
+                            new URL(
+                                userData.photoURL,
+                                window.location.origin
+                            ).href;
+
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Profil bilgileri alınamadı:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+        /*
+         * VİDEOLARI GETİR
+         */
+
+        async function loadVideos() {
+
+            try {
+
+                const videosQuery =
+                    query(
+                        collection(
+                            db,
+                            "videos"
+                        ),
+                        orderBy(
+                            "createdAt",
+                            "desc"
+                        )
+                    );
+
+
+                const snapshot =
+                    await getDocs(
+                        videosQuery
+                    );
+
+
+                videoGrid.innerHTML = "";
+
+
+                let videoCount = 0;
+
+
+                snapshot.forEach(
+                    (videoDocument) => {
+
+                        const data =
+                            videoDocument.data();
+
+
+                        /*
+                         * SADECE PUBLIC
+                         */
+
+                        if (
+                            data.visibility &&
+                            data.visibility !== "public"
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        videoCount++;
+
+
+                        /*
+                         * STATUS KONTROLÜ
+                         */
+
+                        const status =
+                            String(
+                                data.status || ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        const isBanned =
+                            status === "banned";
+
+
+                        /*
+                         * DEBUG
+                         */
+
+                        console.log(
+                            "Snaply video:",
+                            {
+                                id: videoDocument.id,
+                                status: data.status,
+                                normalizedStatus: status,
+                                isBanned: isBanned
+                            }
+                        );
+
+
+                        /*
+                         * LINK
+                         */
+
+                        const link =
+                            document.createElement(
+                                "a"
+                            );
+
+                        link.className =
+                            "video-link";
+
+                        link.href =
+                            "video/?id=" +
+                            encodeURIComponent(
+                                videoDocument.id
+                            );
+
+
+                        /*
+                         * KART
+                         */
+
+                        const card =
+                            document.createElement(
+                                "div"
+                            );
+
+                        card.className =
+                            "video-card-real";
+
+
+                        /*
+                         * THUMBNAIL
+                         */
+
+                        const thumbnail =
+                            document.createElement(
+                                "img"
+                            );
+
+                        thumbnail.className =
+                            "video-thumbnail";
+
+
+                        /*
+                         * BANNED İSE:
+                         *
+                         * Cloudinary URL'sine
+                         * HİÇ dokunmuyoruz.
+                         */
+
+                        if (isBanned) {
+
+                            thumbnail.src =
+                                new URL(
+                                    "images/default-thumbnail.png",
+                                    window.location.href
+                                ).href;
+
+                            thumbnail.alt =
+                                "Bu video kaldırıldı";
+
+                        }
+                        else {
+
+                            thumbnail.src =
+                                data.thumbnailURL ||
+                                new URL(
+                                    "images/default-thumbnail.png",
+                                    window.location.href
+                                ).href;
+
+                            thumbnail.alt =
+                                data.title ||
+                                "Video";
+
+                        }
+
+
+                        /*
+                         * RESİM YÜKLENEMEZSE
+                         */
+
+                        thumbnail.onerror =
+                            function () {
+
+                                if (
+                                    !this.src.endsWith(
+                                        "default-thumbnail.png"
+                                    )
+                                ) {
+
+                                    this.src =
+                                        new URL(
+                                            "images/default-thumbnail.png",
+                                            window.location.href
+                                        ).href;
+
+                                }
+
+                            };
+
+
+                        /*
+                         * BİLGİ ALANI
+                         */
+
+                        const info =
+                            document.createElement(
+                                "div"
+                            );
+
+                        info.className =
+                            "video-info";
+
+
+                        /*
+                         * BAŞLIK
+                         */
+
+                        const title =
+                            document.createElement(
+                                "h3"
+                            );
+
+                        title.className =
+                            "video-title";
+
+
+                        if (isBanned) {
+
+                            title.textContent =
+                                "Başlıksız video";
+                        }
+                        else {
+
+                            title.textContent =
+                                data.title ||
+                                "Başlıksız video";
+
+                        }
+
+
+                        /*
+                         * KULLANICI
+                         */
+
+                        const author =
+                            document.createElement(
+                                "p"
+                            );
+
+                        author.className =
+                            "video-author";
+
+
+                        if (isBanned) {
+
+                            author.textContent =
+                                "Snaply";
+
+                        }
+                        else if (
+                            data.publicusername
+                        ) {
+
+                            author.textContent =
+                                "@" +
+                                data.publicusername;
+
+                        }
+                        else {
+
+                            author.textContent =
+                                data.username ||
+                                "";
+
+                        }
+
+
+                        /*
+                         * AÇIKLAMA
+                         */
+
+                        if (
+                            data.description &&
+                            !isBanned
+                        ) {
+
+                            const description =
+                                document.createElement(
+                                    "p"
+                                );
+
+                            description.className =
+                                "video-description";
+
+                            description.textContent =
+                                data.description;
+
+                            info.appendChild(
+                                description
+                            );
+
+                        }
+
+
+                        /*
+                         * ELEMENTLERİ EKLE
+                         */
+
+                        info.insertBefore(
+                            author,
+                            info.firstChild
+                        );
+
+                        info.insertBefore(
+                            title,
+                            info.firstChild
+                        );
+
+
+                        card.appendChild(
+                            thumbnail
+                        );
+
+                        card.appendChild(
+                            info
+                        );
+
+                        link.appendChild(
+                            card
+                        );
+
+                        videoGrid.appendChild(
+                            link
+                        );
+
+                    }
+                );
+
+
+                /*
+                 * VİDEO YOK
+                 */
+
+                if (
+                    videoCount === 0
+                ) {
+
+                    videoGrid.innerHTML = `
+                        <div class="no-videos">
+                            Henüz video yok.
+                        </div>
+                    `;
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Videolar alınamadı:",
+                    error
+                );
+
+                videoGrid.innerHTML = `
+                    <div class="error-message">
+                        Videolar yüklenirken bir hata oluştu.
+                    </div>
+                `;
+
+            }
+
+        }
+
+
+        /*
+         * BAŞLAT
+         */
+
+        loadVideos();
+
+    </script>
+
+</body>
+</html>

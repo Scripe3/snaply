@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Video Detayları - Snaply</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Wanted Sans", sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        @font-face {
+            font-family: 'Wanted Sans';
+            src: url('/fonts/WantedSans.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 60px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        header > img {
+            width: 99px;
+            margin: 0;
+        }
+
+        header nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            margin-right: 40px;
+        }
+
+        #profilePhoto {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid #eee;
+            transition: 0.2s;
+        }
+
+        #profilePhoto:hover {
+            transform: scale(1.05);
+            border-color: #ccc;
+        }
+
+        aside {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 200px;
+            height: calc(100% - 60px);
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding-top: 20px;
+        }
+
+        aside a {
+            display: block;
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        aside a:hover {
+            background-color: #f0f0f0;
+        }
+
+        main {
+            margin-left: 200px;
+            padding-top: 80px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 40px;
+        }
+
+        .details-container {
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .details-container h1 {
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .content-box {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        .video-preview {
+            width: 100%;
+            background-color: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-preview video {
+            width: 100%;
+            max-height: 500px;
+            display: block;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .thumbnail-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail-preview {
+            width: 240px;
+            height: 135px;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            text-align: center;
+        }
+
+        .thumbnail-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .thumbnail-button {
+            display: inline-block;
+            padding: 11px 16px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .thumbnail-button:hover {
+            background-color: #e8e8e8;
+        }
+
+        .input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input:focus {
+            border-color: #999;
+        }
+
+        textarea.input {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .visibility {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .visibility label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .publish-button {
+            width: 100%;
+            margin-top: 30px;
+            padding: 15px;
+            border: none;
+            border-radius: 9px;
+            background-color: #111;
+            color: white;
+            font-family: inherit;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .publish-button:hover {
+            opacity: 0.85;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 15px;
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            color: #111;
+        }
+
+        .no-video {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .no-video h2 {
+            margin-bottom: 8px;
+        }
+
+        .no-video p {
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <img src="../../images/SnaplyText.png" alt="Snaply">
+
+        <nav>
+            <a href="../../">Ana Sayfa</a>
+            <a href="#">Popüler</a>
+            <a href="#">Abonelikler</a>
+        </nav>
+
+        <div class="header-right">
+            <img
+                id="profilePhoto"
+                src="../../images/default-avatar.png"
+                alt="Profil"
+            >
+        </div>
+
+    </header>
+
+
+    <aside>
+
+        <a href="../../">Ana Sayfa</a>
+        <a href="#">Trendler</a>
+        <a href="#">Abonelikler</a>
+        <a href="#">Kitaplık</a>
+        <a href="#">Geçmiş</a>
+
+    </aside>
+
+
+    <main>
+
+        <div class="details-container">
+
+            <h1>Video Detayları</h1>
+
+            <p class="subtitle">
+                Videonun bilgilerini düzenle ve yayınlamaya hazırla.
+            </p>
+
+
+            <div
+                id="noVideo"
+                class="content-box no-video"
+                style="display: none;"
+            >
+
+                <h2>Video bulunamadı</h2>
+
+                <p>
+                    Önce bir video seçmen gerekiyor.
+                </p>
+
+                <a
+                    href="../"
+                    class="back-button"
+                >
+                    ← Video seçimine dön
+                </a>
+
+            </div>
+
+
+            <div
+                id="detailsContent"
+                class="content-box"
+            >
+
+                <div class="video-preview">
+
+                    <video
+                        id="videoPreview"
+                        controls
+                    ></video>
+
+                </div>
+
+
+                <div class="section">
+
+                    <div class="section-title">
+                        Kapak Fotoğrafı
+                    </div>
+
+                    <div class="thumbnail-area">
+
+                        <div
+                            class="thumbnail-preview"
+                            id="thumbnailPreview"
+                        >
+                            <span id="thumbnailText">
+                                Kapak fotoğrafı seçilmedi
+                            </span>
+
+                            <img
+                                id="thumbnailImage"
+                                alt="Kapak"
+                            >
+                        </div>
+
+
+                        <label
+                            class="thumbnail-button"
+                            for="thumbnailInput"
+                        >
+                            Kapak Fotoğrafı Seç
+                        </label>
+
+                        <input
+                            type="file"
+                            id="thumbnailInput"
+                            accept="image/*"
+                            hidden
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="section">
+
+                    <div class="section-title">
+                        Başlık
+                    </div>
+
+                    <input
+                        type="text"
+                        id="title"
+                        class="input"
+                        maxlength="100"
+                        placeholder="Videonun başlığını yaz"
+                    >
+
+                </div>
+
+
+                <div class="section">
+
+                    <div class="section-title">
+                        Açıklama
+                    </div>
+
+                    <textarea
+                        id="description"
+                        class="input"
+                        maxlength="5000"
+                        placeholder="Videon hakkında bir şeyler yaz..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="section">
+
+                    <div class="section-title">
+                        Görünürlük
+                    </div>
+
+                    <div class="visibility">
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="visibility"
+                                value="public"
+                                checked
+                            >
+                            Herkese Açık
+                        </label>
+
+                        <label>
+                            <input
+                                type="radio"
+                                name="visibility"
+                                value="private"
+                            >
+                            Gizli
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="publishButton"
+                    class="publish-button"
+                >
+                    Videoyu Yayınla
+                </button>
+
+
+                <a
+                    href="../"
+                    class="back-button"
+                >
+                    ← Videoyu değiştir
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+<script type="module">
+
+    import { auth, db } from "../../firebase.js";
+
+    import {
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+    import {
+        doc,
+        getDoc,
+        collection,
+        addDoc,
+        serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+    const videoPreview =
+        document.getElementById("videoPreview");
+
+    const profilePhoto =
+        document.getElementById("profilePhoto");
+
+    const thumbnailInput =
+        document.getElementById("thumbnailInput");
+
+    const thumbnailImage =
+        document.getElementById("thumbnailImage");
+
+    const thumbnailText =
+        document.getElementById("thumbnailText");
+
+    const titleInput =
+        document.getElementById("title");
+
+    const descriptionInput =
+        document.getElementById("description");
+
+    const publishButton =
+        document.getElementById("publishButton");
+
+    const detailsContent =
+        document.getElementById("detailsContent");
+
+    const noVideo =
+        document.getElementById("noVideo");
+
+
+    /*
+     * Cloudinary
+     */
+
+    const CLOUDINARY_CLOUD_NAME =
+        "nwqpxpvf";
+
+    const CLOUDINARY_UPLOAD_PRESET =
+        "Snaply";
+
+
+    let selectedVideo = null;
+    let currentUser = null;
+
+
+    /*
+     * Firebase kullanıcı kontrolü
+     */
+
+    onAuthStateChanged(auth, async (user) => {
+
+        currentUser = user;
+
+
+        if (!user) {
+
+            publishButton.disabled = true;
+
+            publishButton.textContent =
+                "Giriş yapmanız gerekiyor";
+
+            return;
+
+        }
+
+
+        try {
+
+            const snap =
+                await getDoc(
+                    doc(
+                        db,
+                        "users",
+                        user.uid
+                    )
+                );
+
+
+            if (!snap.exists()) {
+                return;
+            }
+
+
+            const data =
+                snap.data();
+
+
+            if (data.photoURL) {
+
+                profilePhoto.src =
+                    new URL(
+                        data.photoURL,
+                        window.location.origin
+                    ).href;
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Kullanıcı bilgileri alınamadı:",
+                error
+            );
+
+        }
+
+    });
+
+
+    /*
+     * IndexedDB
+     */
+
+    function openUploadDB() {
+
+        return new Promise((resolve, reject) => {
+
+            const request =
+                indexedDB.open(
+                    "SnaplyUploadDB",
+                    1
+                );
+
+
+            request.onupgradeneeded = (event) => {
+
+                const database =
+                    event.target.result;
+
+
+                if (
+                    !database.objectStoreNames.contains(
+                        "upload"
+                    )
+                ) {
+
+                    database.createObjectStore(
+                        "upload"
+                    );
+
+                }
+
+            };
+
+
+            request.onsuccess = () => {
+
+                resolve(
+                    request.result
+                );
+
+            };
+
+
+            request.onerror = () => {
+
+                reject(
+                    request.error
+                );
+
+            };
+
+        });
+
+    }
+
+
+    /*
+     * Videoyu IndexedDB'den al
+     */
+
+    async function getVideo() {
+
+        const database =
+            await openUploadDB();
+
+
+        return new Promise((resolve, reject) => {
+
+            const transaction =
+                database.transaction(
+                    "upload",
+                    "readonly"
+                );
+
+
+            const store =
+                transaction.objectStore(
+                    "upload"
+                );
+
+
+            const request =
+                store.get("video");
+
+
+            request.onsuccess = () => {
+
+                database.close();
+
+                resolve(
+                    request.result
+                );
+
+            };
+
+
+            request.onerror = () => {
+
+                database.close();
+
+                reject(
+                    request.error
+                );
+
+            };
+
+        });
+
+    }
+
+
+    /*
+     * Videoyu yükle
+     */
+
+    async function loadVideo() {
+
+        try {
+
+            const data =
+                await getVideo();
+
+
+            if (!data || !data.blob) {
+
+                detailsContent.style.display =
+                    "none";
+
+                noVideo.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
+            selectedVideo =
+                new File(
+                    [data.blob],
+                    data.name,
+                    {
+                        type: data.type
+                    }
+                );
+
+
+            const videoURL =
+                URL.createObjectURL(
+                    selectedVideo
+                );
+
+
+            videoPreview.src =
+                videoURL;
+
+
+            videoPreview.load();
+
+
+        } catch (error) {
+
+            console.error(
+                "Video yüklenemedi:",
+                error
+            );
+
+
+            detailsContent.style.display =
+                "none";
+
+            noVideo.style.display =
+                "block";
+
+        }
+
+    }
+
+
+    loadVideo();
+
+
+    /*
+     * Kapak fotoğrafı önizleme
+     */
+
+    thumbnailInput.addEventListener(
+        "change",
+        () => {
+
+            const file =
+                thumbnailInput.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            if (!file.type.startsWith("image/")) {
+
+                alert(
+                    "Lütfen bir görsel dosyası seç."
+                );
+
+                thumbnailInput.value = "";
+
+                return;
+
+            }
+
+
+            const url =
+                URL.createObjectURL(
+                    file
+                );
+
+
+            thumbnailImage.src =
+                url;
+
+
+            thumbnailImage.style.display =
+                "block";
+
+
+            thumbnailText.style.display =
+                "none";
+
+        }
+    );
+
+
+    /*
+     * Cloudinary'ye dosya yükleme
+     */
+
+    async function uploadToCloudinary(
+        file,
+        resourceType
+    ) {
+
+        const endpoint =
+            `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "file",
+            file
+        );
+
+
+        formData.append(
+            "upload_preset",
+            CLOUDINARY_UPLOAD_PRESET
+        );
+
+
+        const response =
+            await fetch(
+                endpoint,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(
+                "Cloudinary hatası:",
+                result
+            );
+
+
+            throw new Error(
+                result.error?.message ||
+                "Cloudinary yüklemesi başarısız."
+            );
+
+        }
+
+
+        return result;
+
+    }
+
+
+    /*
+     * Yayınla
+     */
+
+    publishButton.addEventListener(
+        "click",
+        async () => {
+
+            if (!currentUser) {
+
+                alert(
+                    "Video yayınlamak için giriş yapmalısınız."
+                );
+
+                return;
+
+            }
+
+
+            if (!selectedVideo) {
+
+                alert(
+                    "Video bulunamadı."
+                );
+
+                return;
+
+            }
+
+
+            const title =
+                titleInput.value.trim();
+
+
+            if (!title) {
+
+                alert(
+                    "Lütfen video başlığı gir."
+                );
+
+                titleInput.focus();
+
+                return;
+
+            }
+
+
+            const description =
+                descriptionInput.value.trim();
+
+
+            const visibility =
+                document.querySelector(
+                    'input[name="visibility"]:checked'
+                ).value;
+
+
+            /*
+             * Butonu kilitle
+             */
+
+            publishButton.disabled =
+                true;
+
+
+            publishButton.textContent =
+                "Video yükleniyor...";
+
+
+            try {
+
+                /*
+                 * 1. Video Cloudinary
+                 */
+
+                console.log(
+                    "Video Cloudinary'ye yükleniyor..."
+                );
+
+
+                const videoResult =
+                    await uploadToCloudinary(
+                        selectedVideo,
+                        "video"
+                    );
+
+
+                console.log(
+                    "Video yüklendi:",
+                    videoResult
+                );
+
+
+                const videoURL =
+                    videoResult.secure_url;
+
+
+                const publicId =
+                    videoResult.public_id;
+
+
+                /*
+                 * 2. Kapak fotoğrafı
+                 */
+
+                let thumbnailURL = null;
+
+
+                const thumbnailFile =
+                    thumbnailInput.files[0];
+
+
+                if (thumbnailFile) {
+
+                    publishButton.textContent =
+                        "Kapak fotoğrafı yükleniyor...";
+
+
+                    console.log(
+                        "Kapak Cloudinary'ye yükleniyor..."
+                    );
+
+
+                    const thumbnailResult =
+                        await uploadToCloudinary(
+                            thumbnailFile,
+                            "image"
+                        );
+
+
+                    thumbnailURL =
+                        thumbnailResult.secure_url;
+
+
+                    console.log(
+                        "Kapak yüklendi:",
+                        thumbnailURL
+                    );
+
+                }
+
+
+                /*
+                 * 3. Kullanıcı bilgileri
+                 */
+
+                const userSnap =
+                    await getDoc(
+                        doc(
+                            db,
+                            "users",
+                            currentUser.uid
+                        )
+                    );
+
+
+                let username = "";
+                let publicusername = "";
+
+
+                if (userSnap.exists()) {
+
+                    const userData =
+                        userSnap.data();
+
+
+                    username =
+                        userData.username || "";
+
+
+                    publicusername =
+                        userData.publicusername || "";
+
+                }
+
+
+                /*
+                 * 4. Firestore
+                 */
+
+                publishButton.textContent =
+                    "Video kaydediliyor...";
+
+
+                const videoDocument = {
+
+                    title: title,
+
+                    description: description,
+
+                    videoURL: videoURL,
+
+                    thumbnailURL: thumbnailURL,
+
+                    cloudinaryPublicId: publicId,
+
+                    authorUID: currentUser.uid,
+
+                    username: username,
+
+                    publicusername: publicusername,
+
+                    visibility: visibility,
+
+                    createdAt: serverTimestamp()
+
+                };
+
+
+                const videoRef =
+                    await addDoc(
+                        collection(
+                            db,
+                            "videos"
+                        ),
+                        videoDocument
+                    );
+
+
+                console.log(
+                    "Firestore video ID:",
+                    videoRef.id
+                );
+
+
+                /*
+                 * Başarılı
+                 */
+
+                publishButton.textContent =
+                    "Yayınlandı ✓";
+
+
+                alert(
+                    "Video başarıyla yayınlandı!"
+                );
+
+
+                /*
+                 * Upload verisini temizle
+                 */
+
+                try {
+
+                    const database =
+                        await openUploadDB();
+
+
+                    const transaction =
+                        database.transaction(
+                            "upload",
+                            "readwrite"
+                        );
+
+
+                    transaction
+                        .objectStore("upload")
+                        .delete("video");
+
+
+                    transaction.oncomplete =
+                        () => {
+
+                            database.close();
+
+                        };
+
+                } catch (error) {
+
+                    console.error(
+                        "Geçici video silinemedi:",
+                        error
+                    );
+
+                }
+
+
+                /*
+                 * Ana sayfaya dön
+                 */
+
+                window.location.href =
+                    "../../";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Yayınlama hatası:",
+                    error
+                );
+
+
+                alert(
+                    "Video yayınlanırken bir hata oluştu:\n\n" +
+                    error.message
+                );
+
+
+                publishButton.disabled =
+                    false;
+
+
+                publishButton.textContent =
+                    "Videoyu Yayınla";
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

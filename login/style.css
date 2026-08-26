@@ -1,0 +1,96 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+@font-face {
+    font-family: 'Wanted Sans';
+    src: url('/fonts/WantedSans.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.login-box {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 30px;
+  width: 400px;
+  position: relative;
+}
+
+.login-box img {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 100px;
+}
+
+.login-box h2 {
+  margin: 20px 0 25px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: normal;
+  font-family: Wanted Sans, sans-serif;
+}
+
+.login-box input {
+  width: 375px;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.login-box input:focus {
+  border-color: #4285f4;
+  box-shadow: 0 0 5px rgba(66,133,244,0.5);
+}
+
+.login-box button {
+  display: block;
+  margin: 20px auto 0;
+  width: 150px;
+  padding: 12px;
+  background: #0E4EB5;
+  color: #fff;
+  border: none;
+  border-radius: 23px;
+  font-size: 15px;
+  font-family: Wanted Sans, sans-serif;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  background: #357ae8;
+  box-shadow: 0 0 5px rgba(66,133,244,0.5);
+}
+
+.login-box a {
+  display: block;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 13px;
+  color: #4285f4;
+  text-decoration: none;
+}
+.login-box p {
+  text-align: center;
+  font-size: 12px;
+  font-family: Wanted Sans, sans-serif;
+  font-weight: 200;
+  color: #474747;
+}
+
+.login-box a:hover {
+  text-decoration: underline;
+}

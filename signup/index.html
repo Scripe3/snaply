@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Hesap Oluştur</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="login-box">
+    <img src="../images/SnaplyText.png" alt="Logo">
+    <h2>Hesap Oluştur</h2>
+    <p>Snaply'i kullanmaya devam etmek için hesap oluşturun.</p>
+
+    <form id="signupForm">
+      <input type="email" id="email" name="email" placeholder="E-Posta" required>
+      <input type="text" id="username" name="username" placeholder="Kullanıcı Adı" required>
+      <input type="text" id="publicusername" name="publicusername" placeholder="Herkese Açık Kullanıcı Adı (boşluksuz ve türkçe karaktersiz)" required>
+      <input type="password" id="password" name="password" placeholder="Şifre" required>
+
+      <button type="submit">Hesap Oluştur</button>
+    </form>
+
+    <a href="/snaply/login">Zaten bir hesabın var mı?</a>
+  </div>
+  <script type="module" src="script.js"></script>
+</body>
+</html>
