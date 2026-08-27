@@ -368,6 +368,18 @@
                         background-color: #ddd;
                 }
 
+                .video-actions button i {
+                        font-size: 16px;
+                }
+
+                #likeCount {
+                        margin-left: 0px;
+                }
+
+                #likeCount:not(:empty) {
+                        margin-left: 6px;
+                }
+
                 /* Description */
 
                 .video-description-box {
@@ -644,15 +656,23 @@
                                                 <button
                                                         id="likeButton"
                                                         type="button"
+                                                        aria-label="Beğen"
                                                 >
-                                                        👍 Beğen
+                                                        <i
+                                                                id="likeIcon"
+                                                                class="fa-regular fa-thumbs-up"
+                                                        ></i>
+
+                                                        <span
+                                                                id="likeCount"
+                                                        ></span>
                                                 </button>
 
                                                 <button
                                                         id="shareButton"
                                                         type="button"
                                                 >
-                                                        ↗ Paylaş
+                                                        <i class="fa-solid fa-share"></i>
                                                 </button>
 
                                         </div>
@@ -702,7 +722,11 @@
                         doc,
                         getDoc,
                         updateDoc,
-                        increment
+                        increment,
+                        collection,
+                        getDocs,
+                        setDoc,
+                        deleteDoc
                 } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
 
@@ -760,6 +784,12 @@
                 const likeButton =
                         document.getElementById("likeButton");
 
+                const likeIcon =
+                        document.getElementById("likeIcon");
+
+                const likeCount =
+                        document.getElementById("likeCount");
+
                 const shareButton =
                         document.getElementById("shareButton");
 
@@ -767,6 +797,12 @@
                 let viewCounted = false;
 
                 let fullscreenTimer = null;
+
+                let currentLikeCount = 0;
+
+                let currentUser = null;
+
+                let videoLoaded = false;
 
 
                 /*
@@ -805,6 +841,8 @@
                         auth,
                         async (user) => {
 
+                                currentUser = user;
+
                                 if (!user) {
                                         return;
                                 }
@@ -835,6 +873,10 @@
                                                                 window.location.origin
                                                         ).href;
 
+                                        }
+
+                                        if (videoLoaded) {
+                                                await checkLikeStatus();
                                         }
 
                                 }
@@ -1102,6 +1144,12 @@
                                  */
 
                                 videoPlayer.load();
+
+                                videoLoaded = true;
+
+                                if (currentUser) {
+                                        await checkLikeStatus();
+                                }
 
                                 loading.style.display =
                                         "none";
@@ -1831,16 +1879,209 @@
 
 
                 /*
-                 * Beğen
+                 * Beğeni sayısını göster
+                 */
+
+                function updateLikeCountDisplay(count) {
+
+                        currentLikeCount =
+                                Math.max(
+                                        0,
+                                        Number(count) || 0
+                                );
+
+                        if (currentLikeCount > 0) {
+
+                                likeCount.textContent =
+                                        currentLikeCount;
+
+                                likeCount.style.display =
+                                        "inline";
+
+                        }
+                        else {
+
+                                likeCount.textContent =
+                                        "";
+
+                                likeCount.style.display =
+                                        "none";
+
+                        }
+
+                }
+
+
+                /*
+                 * Kullanıcının beğeni durumunu kontrol et
+                 */
+
+                async function checkLikeStatus() {
+
+                        if (
+                                !videoId ||
+                                !currentUser
+                        ) {
+                                return;
+                        }
+
+                        try {
+
+                                const likeSnapshot =
+                                        await getDoc(
+                                                doc(
+                                                        db,
+                                                        "videos",
+                                                        videoId,
+                                                        "likes",
+                                                        currentUser.uid
+                                                )
+                                        );
+
+                                if (likeSnapshot.exists()) {
+
+                                        likeButton.classList.add(
+                                                "active"
+                                        );
+
+                                        likeIcon.className =
+                                                "fa-solid fa-thumbs-up";
+
+                                }
+                                else {
+
+                                        likeButton.classList.remove(
+                                                "active"
+                                        );
+
+                                        likeIcon.className =
+                                                "fa-regular fa-thumbs-up";
+
+                                }
+
+                                const likesSnapshot =
+                                        await getDocs(
+                                                collection(
+                                                        db,
+                                                        "videos",
+                                                        videoId,
+                                                        "likes"
+                                                )
+                                        );
+
+                                updateLikeCountDisplay(
+                                        likesSnapshot.size
+                                );
+
+                        }
+                        catch (error) {
+
+                                console.warn(
+                                        "Beğeni durumu alınamadı."
+                                );
+
+                        }
+
+                }
+
+
+                /*
+                 * Beğen / beğeniyi kaldır
                  */
 
                 likeButton.addEventListener(
                         "click",
-                        () => {
+                        async () => {
 
-                                likeButton.classList.toggle(
-                                        "active"
-                                );
+                                if (!currentUser) {
+
+                                        return;
+
+                                }
+
+                                if (!videoId) {
+
+                                        return;
+
+                                }
+
+                                likeButton.disabled =
+                                        true;
+
+                                try {
+
+                                        const likeReference =
+                                                doc(
+                                                        db,
+                                                        "videos",
+                                                        videoId,
+                                                        "likes",
+                                                        currentUser.uid
+                                                );
+
+                                        const likeSnapshot =
+                                                await getDoc(
+                                                        likeReference
+                                                );
+
+                                        if (
+                                                likeSnapshot.exists()
+                                        ) {
+
+                                                await deleteDoc(
+                                                        likeReference
+                                                );
+
+                                                likeButton.classList.remove(
+                                                        "active"
+                                                );
+
+                                                likeIcon.className =
+                                                        "fa-regular fa-thumbs-up";
+
+                                                updateLikeCountDisplay(
+                                                        currentLikeCount - 1
+                                                );
+
+                                        }
+                                        else {
+
+                                                await setDoc(
+                                                        likeReference,
+                                                        {
+                                                                uid:
+                                                                        currentUser.uid
+                                                        }
+                                                );
+
+                                                likeButton.classList.add(
+                                                        "active"
+                                                );
+
+                                                likeIcon.className =
+                                                        "fa-solid fa-thumbs-up";
+
+                                                updateLikeCountDisplay(
+                                                        currentLikeCount + 1
+                                                );
+
+                                        }
+
+                                }
+                                catch (error) {
+
+                                        console.error(
+                                                "Beğeni güncellenemedi:",
+                                                error
+                                        );
+
+                                }
+                                finally {
+
+                                        likeButton.disabled =
+                                                false;
+
+                                }
 
                         }
                 );
@@ -1863,14 +2104,14 @@
                                                 url
                                         );
 
-                                        shareButton.textContent =
-                                                "✓ Kopyalandı";
+                                        shareButton.innerHTML =
+                                                '<i class="fa-solid fa-check"></i>';
 
                                         setTimeout(
                                                 () => {
 
-                                                        shareButton.textContent =
-                                                                "↗ Paylaş";
+                                                        shareButton.innerHTML =
+                                                                '<i class="fa-solid fa-share"></i>';
 
                                                 },
                                                 2000
